@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qss/black.qss</file>
+        <file>qss/dark.qss</file>
+        <file>qss/style.qss</file>
+        <file>qss/white.qss</file>
+        <file>editer_image/5763.jpg_wh300.jpg</file>
+        <file>editer_image/equal_sign_23.ico</file>
+        <file>editer_image/timebiue.jpg</file>
+        <file>editer_image/timehui.jpg</file>
+        <file>editer_image/yellowDuck.ico</file>
+    </qresource>
+</RCC>
