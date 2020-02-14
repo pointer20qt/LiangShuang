@@ -1,6 +1,8 @@
 #include<iostream>
 #include<string>
 #include<initializer_list>
+#define NDEBUG
+#include<assert.h>
 
 using namespace std;
 
@@ -14,6 +16,7 @@ public:
 		}
 	}
 	int& operator[](unsigned int index){//使用引用重载运算符，可以实现更改
+		assert(0); //加个断言
 		return obj[index];
 	}
 };
