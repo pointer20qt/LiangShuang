@@ -2,7 +2,7 @@
 #include <vector>
 using namespace std;
 
-//栈stack，先入后出， push,pop,top，size，empty
+//栈stack，先入后出, push,pop,top,size,empty
 template<class T> class L_stack{
 	std::vector<T> arr;
 public:
