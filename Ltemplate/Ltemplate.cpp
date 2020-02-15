@@ -3,14 +3,14 @@
 
 using namespace std;
 
-template <class T> void Swap(T &a, T &b)//模板函数
+template <class T> void Swap(T &a, T &b)//模板函数交换
 {
 	T temp = a;
 	a = b;
 	b = temp;
 	cout << "使用的模板函数" << endl;
 }
-void Swap(int &a, int &b)//模板函数
+void Swap(int &a, int &b)//int交换
 {
 	int temp = a;
 	a = b;
@@ -56,15 +56,14 @@ void My_swap(vec &a, vec &b)
 
 int main()
 {
-	int a(20);
-	int b(10);
+	int x1 = 1,x2 = 2;
 	//模板类的隐式推导
-	Swap(a, b);
+	Swap(x1, x2);
 	//模板类的显式推导
-	Swap<int>(a, b);
+	Swap<int>(x1, x2);
 	//模板类的强制模板
-	Swap<>(a, b);
-	cout << "a=" << a <<"  b="<< b << endl;
+	Swap<>(x1, x2);
+	cout << "x1: " << x1 <<" x2: "<< x2 << endl;
 	//模板函数类中应用
 	vec A(100);
 	vec B(200);
