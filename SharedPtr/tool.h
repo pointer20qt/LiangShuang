@@ -69,6 +69,8 @@ namespace liang{
 	class Ref{
 		//当前资源计数
 		int r_count=0;
+		//当前弱引用指针计数
+		int w_count=0;
 		T* object=nullptr;
 	public:
 		Ref(T* target):object(target){ //构造函数，一旦放入，计数器加一
@@ -83,8 +85,20 @@ namespace liang{
 			if (r_count == 0){
 				delete object; //析构记住的爱啥啥类
 				delete this; //析构本引用计数类
+				if(w_count == 0){//当r_count减少到0，如果w_count也为0
+					delete this;//删除本引用计数器
+				}
 			}
 		}
+		inline void reduce_w(){
+			w_count--;
+			//为什么要判断条件要加上r_count==0
+			//如果r不为0，说明还有指向
+			if (w_count == 0&&r_count==0){
+				delete this;
+			}
+		}
+
 		//获得指向的爱啥啥对象
 		T* get(){
 			return object;
@@ -104,13 +118,21 @@ namespace liang{
 	unique() 判断当前是否唯一  use_count()==1
 	operator bool() 是否关联对象
 	*/
+	template<class T> class LweakPtr;//声明一下
     template<class T> class LSharedPtr{ //模板类
+		friend class LweakPtr<T>;//LweakPtr为LSharePtr的友元函数
 	    Ref<T>* ref=nullptr; //有一个Ref类爱指向啥指向啥
 	public:
 		LSharedPtr() = default;//无参构造
 		~LSharedPtr(){//析构时，计数器不为零，要将计数类减一，计数器为零，有计数器delete object&this
 			if (ref){
 				ref->reduce();
+			}
+		}
+		LSharedPtr(Ref<T>* newRef){
+			ref = newRef;
+			if (ref){
+				ref->increase();
 			}
 		}
 		LSharedPtr(T* newP){ //指针指向构造
@@ -202,6 +224,88 @@ namespace liang{
 			return ref != nullptr;
 		}
 	};
+
+
+	//weak_ptr实现
+	template<class T>
+	class LweakPtr{
+		Ref<T>* ref = nullptr;
+	public:
+		LweakPtr() = default;
+		LweakPtr(LSharedPtr<T>& other):ref(other.ref){
+			cout << "使用shread_构造一个weak的拷贝赋 值运算符" << endl;
+			if (ref){
+				ref->increase_w();
+			}
+		}
+		LweakPtr(const LweakPtr<T>& other) :ref(other.ref){
+			if (ref){
+				ref->increase_w();
+			}
+		}
+		LweakPtr(LweakPtr<T>&& other){
+			swap(ref,other.ref);
+		}
+		LweakPtr<T>& operator = (const LweakPtr<T>& other){
+			cout << "调用了weak的拷贝赋值运算符" << endl;
+			if (ref){
+				ref->reduce_w();
+			}
+			ref = other.ref;
+			if (ref){
+				ref->increase_w();
+			}
+			return *this;
+		}
+		LweakPtr<T>&  operator=(LweakPtr<T>&& other){
+			cout << "调用了weak的移动赋值运算符" << endl;
+			if (ref){
+				ref->reduce_w();
+			}
+			ref = other.ref;
+			other.ref = nullptr;
+			return *this;
+		}
+		int use_count(){
+			if (ref){
+				return ref->getCount();
+			}
+			else{
+				return 0;
+			}
+		}
+		bool expired(){
+			if (ref){
+				return ref->getCount() > 0;
+			}
+			else{
+				return false;
+			}
+		}
+		LSharedPtr<T> lock(){
+			LSharedPtr<T> tem(ref);
+			return tem;
+		}
+
+		void sawp(LweakPtr<T>& other){
+			swap(ref,other.ref);
+		}
+		void reset(){
+			ref->reduce_w();
+			ref = nullptr;
+		}
+	};
+	template<class T,class ...args>
+	LSharedPtr<T>
+	make_Lshared(args... a){
+		//将ref对象和T对象在一起创建。
+		//创建一次ref对象，在new T对象
+		LSharedPtr<T> t(new T(a...));
+		return t;
+	}
+}
+
+
 };
 
 
