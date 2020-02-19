@@ -287,7 +287,7 @@ namespace liang{
 			return tem;
 		}
 
-		void sawp(LweakPtr<T>& other){
+		void LSwap(LweakPtr<T>& other){
 			swap(ref,other.ref);
 		}
 		void reset(){
@@ -303,10 +303,8 @@ namespace liang{
 		LSharedPtr<T> t(new T(a...));
 		return t;
 	}
-}
-
-
 };
+
 
 
 
